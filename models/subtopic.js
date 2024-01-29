@@ -1,13 +1,9 @@
 const mongoose = require("mongoose");
 
 const subtopicSchema = new mongoose.Schema({
-    courseid: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Course",
-    },
-    topicid: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Topic",
+    subtopicName: {
+        type: String,
+        required: true,
     },
     info: [
         {
