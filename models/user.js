@@ -37,28 +37,28 @@ const userSchema = new Schema({
         default: "user",
     },
 
-    // Courses: [
-    //     {
-    //         course: {
-    //             courseId: mongoose.Schema.Types.ObjectId,
-    //             ref: "Course",
-    //         },
-    //         userProgress: {
-    //             type: Number,
-    //             default: 0, // (came from logic to sum of all videos watched / total)
-    //         },
-    //         topicProgress: [
-    //             {
-    //                 topicId: {
-    //                     type: mongoose.Schema.Types.ObjectId,
-    //                 },
-    //                 track: {
-    //                     type: String,
-    //                 },
-    //             },
-    //         ],
-    //     },
-    // ],
+    Courses: [
+        {
+            courseinfo: {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: "Course",
+            },
+            userProgress: {
+                type: Number,
+                default: 0, // (came from logic to sum of all videos watched / total)
+            },
+            topicProgress: [
+                {
+                    topicId: {
+                        type: mongoose.Schema.Types.ObjectId,
+                    },
+                    track: {
+                        type: String,
+                    },
+                },
+            ],
+        },
+    ],
 });
 
 module.exports = mongoose.model("User", userSchema);

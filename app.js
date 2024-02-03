@@ -10,6 +10,14 @@ const subtopic = require("./models/subtopic");
 const Topic = require("./models/topic");
 const Assignment = require("./models/assignment");
 const Option = require("./models/option");
+const ejs = require("ejs");
+const adminRouter = require("./routes/admin");
+
+app.set("view engine", "ejs");
+app.set("views", path.join(__dirname, "views"));
+app.use(methodOverride("_method"));
+app.use(express.urlencoded({extended: true}));
+app.use(express.static(path.join(__dirname, "/public")));
 
 main()
     .then(() => {
@@ -17,7 +25,7 @@ main()
     })
     .catch((err) => {
         console.log(err);
-    }); 
+    });
 
 async function main() {
     await mongoose.connect(MONGO_URL);
@@ -26,6 +34,8 @@ async function main() {
 app.get("/", async (req, res) => {
     res.send("Hello Server");
 });
+
+app.use("/admin", adminRouter);
 
 app.get("/newuser", async (req, res) => {
     const newUser = new User({
@@ -37,6 +47,12 @@ app.get("/newuser", async (req, res) => {
     });
     await newUser.save();
     console.log(newUser);
+});
+
+app.get("/user/:userId", async (req, res) => {
+    const userId = req.params.userId;
+    const userData = await User.findById(userId);
+    res.json(userData);
 });
 
 app.get("/allusers", async (req, res) => {
@@ -78,6 +94,35 @@ app.get("/newtopic", async (req, res) => {
     });
     await newTopic.save();
     console.log(newTopic);
+});
+
+app.get("/addcourse/:userid", async (req, res) => {
+    try {
+        const userId = req.params.userid;
+        const courseIdToAdd = "65b7d143edc58a30eae6346f";
+
+        const user = await User.findById(userId);
+
+        const isCourseAdded = user.Courses.some((course) => course.courseinfo.toString() === courseIdToAdd);
+
+        if (isCourseAdded) {
+            return res.status(400).json({error: "Course already added to the user"});
+        }
+
+        user.Courses.push({
+            courseinfo: courseIdToAdd,
+            userProgress: 0,
+            topicProgress: [],
+        });
+
+        await user.save();
+
+        const updatedUser = await User.findById(userId).populate("Courses.courseinfo");
+
+        res.json(updatedUser);
+    } catch (error) {
+        console.log(error);
+    }
 });
 
 app.get("/gettopicname", async (req, res) => {
